@@ -1,4 +1,5 @@
-Date.CultureInfo = {
+Date.CultureInfo = Date.CultureInfo || {};
+Date.CultureInfo["sw-KE"] = {
 	/* Culture Name */
     name: "sw-KE",
     englishName: "Kiswahili (Kenya)",

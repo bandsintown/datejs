@@ -6,6 +6,8 @@
  * @license: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/. 
  * @website: http://www.datejs.com/
  */
+
+Date.defaultLocale = "en-US";
  
 (function () {
     Date.Parsing = {
@@ -129,7 +131,7 @@
                 }
             };
         },
-    	  
+        
         // vector operators -- see below
         any: function () {
             var px = arguments;
@@ -217,11 +219,11 @@
                 return [ rx, (r?r[1]:s) ];
             };
         },
-    		
-	    //
-	    // Composite Operators
-	    //
-    		
+        
+      //
+      // Composite Operators
+      //
+        
         between: function (d1, p, d2) { 
             d2 = d2 || d1; 
             var _fn = _.each(_.ignore(d1), p, _.ignore(d2));
@@ -282,17 +284,17 @@
                         last = true; 
                     }
 
-				    // if we parsed the delimiter and now there's no more input,
-				    // that means we shouldn't have parsed the delimiter at all
-				    // so don't update r and mark this as the last element ...
+            // if we parsed the delimiter and now there's no more input,
+            // that means we shouldn't have parsed the delimiter at all
+            // so don't update r and mark this as the last element ...
                     if (!last && q[1].length === 0) { 
                         last = true; 
                     }
 
 
-				    // so, if this isn't the last element, we're going to see if
-				    // we can get any more matches from the remaining (unmatched)
-				    // elements ...
+            // so, if this isn't the last element, we're going to see if
+            // we can get any more matches from the remaining (unmatched)
+            // elements ...
                     if (!last) {
 
                         // build a list of the remaining rules we can match against,
@@ -321,31 +323,31 @@
                         }
                     }
 
-				    // at this point, rx either contains the last matched element
-				    // or the entire matched set that starts with this element.
+            // at this point, rx either contains the last matched element
+            // or the entire matched set that starts with this element.
 
-				    // now we just check to see if this variation is better than
-				    // our best so far, in terms of how much of the input is parsed
+            // now we just check to see if this variation is better than
+            // our best so far, in terms of how much of the input is parsed
                     if (rx[1].length < best[1].length) { 
                         best = rx; 
                     }
 
-				    // if we've parsed all the input, then we're finished
+            // if we've parsed all the input, then we're finished
                     if (best[1].length === 0) { 
                         break; 
                     }
                 }
 
-			    // so now we've either gone through all the patterns trying them
-			    // as the initial match; or we found one that parsed the entire
-			    // input string ...
+          // so now we've either gone through all the patterns trying them
+          // as the initial match; or we found one that parsed the entire
+          // input string ...
 
-			    // if best has no matches, just return empty set ...
+          // if best has no matches, just return empty set ...
                 if (best[0].length === 0) { 
                     return best; 
                 }
 
-			    // if a closing delimiter is provided, then we have to check it also
+          // if a closing delimiter is provided, then we have to check it also
                 if (c) {
                     // we try this even if there is no remaining input because the pattern
                     // may well be optional or match empty input ...
@@ -359,8 +361,8 @@
                     best[1] = q[1];
                 }
 
-			    // if we're here, either there was no closing delimiter or we parsed it
-			    // so now we have the best match; just return it!
+          // if we're here, either there was no closing delimiter or we parsed it
+          // so now we have the best match; just return it!
                 return best;
             };
         },
@@ -395,30 +397,30 @@
             };
         }
     };
-	
+  
 
-	// Generator Operators And Vector Operators
+  // Generator Operators And Vector Operators
 
-	// Generators are operators that have a signature of F(R) => R,
-	// taking a given rule and returning another rule, such as 
-	// ignore, which parses a given rule and throws away the result.
+  // Generators are operators that have a signature of F(R) => R,
+  // taking a given rule and returning another rule, such as 
+  // ignore, which parses a given rule and throws away the result.
 
-	// Vector operators are those that have a signature of F(R1,R2,...) => R,
-	// take a list of rules and returning a new rule, such as each.
+  // Vector operators are those that have a signature of F(R1,R2,...) => R,
+  // take a list of rules and returning a new rule, such as each.
 
-	// Generator operators are converted (via the following _generator
-	// function) into functions that can also take a list or array of rules
-	// and return an array of new rules as though the function had been
-	// called on each rule in turn (which is what actually happens).
+  // Generator operators are converted (via the following _generator
+  // function) into functions that can also take a list or array of rules
+  // and return an array of new rules as though the function had been
+  // called on each rule in turn (which is what actually happens).
 
-	// This allows generators to be used with vector operators more easily.
-	// Example:
-	// each(ignore(foo, bar)) instead of each(ignore(foo), ignore(bar))
+  // This allows generators to be used with vector operators more easily.
+  // Example:
+  // each(ignore(foo, bar)) instead of each(ignore(foo), ignore(bar))
 
-	// This also turns generators into vector operators, which allows
-	// constructs like:
-	// not(cache(foo, bar))
-	
+  // This also turns generators into vector operators, which allows
+  // constructs like:
+  // not(cache(foo, bar))
+  
     var _generator = function (op) {
         return function () {
             var args = null, rx = [];
@@ -461,11 +463,15 @@
     for (var j = 0 ; j < vx.length ; j++) { 
         _[vx[j]] = _vector(_[vx[j]]); 
     }
-	
+  
 }());
 
 (function () {
-    var $D = Date, $P = $D.prototype, $C = $D.CultureInfo;
+    var $D = Date, 
+        $P = $D.prototype, 
+        $C = function() { 
+          return $D.CultureInfo[$D.currentLocale] || $D.CultureInfo[$D.defaultLocale]; 
+        };
 
     var flattenAndCompact = function (ax) { 
         var rx = []; 
@@ -482,7 +488,7 @@
     };
     
     $D.Grammar = {};
-	
+  
     $D.Translator = {
         hour: function (s) { 
             return function () { 
@@ -529,7 +535,7 @@
             return function () {
                 var n = Number(s);
                 this.year = ((s.length > 2) ? n : 
-                    (n + (((n + 2000) < $C.twoDigitYearMax) ? 2000 : 1900))); 
+                    (n + (((n + 2000) < $C().twoDigitYearMax) ? 2000 : 1900))); 
             };
         },
         rday: function (s) { 
@@ -611,7 +617,7 @@
             }
             
             return r;
-        },			
+        },      
         finish: function (x) {
             x = (x instanceof Array) ? flattenAndCompact(x) : [ x ];
 
@@ -751,7 +757,7 @@
     g.ctoken = function (keys) {
         var fn = _C[keys];
         if (! fn) {
-            var c = $C.regexPatterns;
+            var c = $C().regexPatterns;
             var kx = keys.split(/\s+/), px = []; 
             for (var i = 0; i < kx.length ; i++) {
                 px.push(_.replace(_.rtoken(c[kx[i]]), kx[i]));
@@ -760,8 +766,13 @@
         }
         return fn;
     };
-    g.ctoken2 = function (key) { 
-        return _.rtoken($C.regexPatterns[key]);
+    // FIXME: updating this for multiple locales caused the Date.parse('Julio 8, 2004') test to fail
+    g.ctoken2 = function (key) {         
+        var tokens = [];
+        for (locale in Date.CultureInfo) {
+          tokens.push(Date.CultureInfo[locale].regexPatterns[key].source);
+        }
+        return _.rtoken(new RegExp(tokes.join("|"), "i"));
     };
 
     // hour, minute, second, meridian, timezone
@@ -784,7 +795,7 @@
     g.zzz = _.cache(_.process(g.ctoken2("timezone"), t.timezone));
     g.timeSuffix = _.each(_.ignore(g.whiteSpace), _.set([ g.tt, g.zzz ]));
     g.time = _.each(_.optional(_.ignore(_.stoken("T"))), g.hms, g.timeSuffix);
-    	  
+        
     // days, months, years
     g.d = _.cache(_.process(_.each(_.rtoken(/^([0-2]\d|3[0-1]|\d)/), 
         _.optional(g.ctoken2("ordinalSuffix"))), t.day));
@@ -805,8 +816,8 @@
     g.yy = _.cache(_.process(_.rtoken(/^(\d\d)/), t.year));
     g.yyy = _.cache(_.process(_.rtoken(/^(\d\d?\d?\d?)/), t.year));
     g.yyyy = _.cache(_.process(_.rtoken(/^(\d\d\d\d)/), t.year));
-	
-	// rolling these up into general purpose rules
+  
+  // rolling these up into general purpose rules
     _fn = function () { 
         return _.each(_.any.apply(null, arguments), _.not(g.ctoken2("timeContext")));
     };
@@ -855,7 +866,7 @@
     g.ymd = _fn(g.ddd, g.year, g.month, g.day);
     g.dmy = _fn(g.ddd, g.day, g.month, g.year);
     g.date = function (s) { 
-        return ((g[$C.dateElementOrder] || g.mdy).call(this, s));
+        return ((g[$C().dateElementOrder] || g.mdy).call(this, s));
     }; 
 
     // parsing date format specifiers - ex: "h:m:s tt" 
@@ -889,18 +900,18 @@
     );
     
     var _F = {
-		//"M/d/yyyy": function (s) { 
-		//	var m = s.match(/^([0-2]\d|3[0-1]|\d)\/(1[0-2]|0\d|\d)\/(\d\d\d\d)/);
-		//	if (m!=null) { 
-		//		var r =  [ t.month.call(this,m[1]), t.day.call(this,m[2]), t.year.call(this,m[3]) ];
-		//		r = t.finishExact.call(this,r);
-		//		return [ r, "" ];
-		//	} else {
-		//		throw new Date.Parsing.Exception(s);
-		//	}
-		//}
-		//"M/d/yyyy": function (s) { return [ new Date(Date._parse(s)), ""]; }
-	}; 
+    //"M/d/yyyy": function (s) { 
+    //  var m = s.match(/^([0-2]\d|3[0-1]|\d)\/(1[0-2]|0\d|\d)\/(\d\d\d\d)/);
+    //  if (m!=null) { 
+    //    var r =  [ t.month.call(this,m[1]), t.day.call(this,m[2]), t.year.call(this,m[3]) ];
+    //    r = t.finishExact.call(this,r);
+    //    return [ r, "" ];
+    //  } else {
+    //    throw new Date.Parsing.Exception(s);
+    //  }
+    //}
+    //"M/d/yyyy": function (s) { return [ new Date(Date._parse(s)), ""]; }
+  }; 
     var _get = function (f) { 
         return _F[f] = (_F[f] || g.format(f)[0]);      
     };
@@ -917,7 +928,7 @@
         }
     };
 
-	// check for these formats first
+  // check for these formats first
     g._formats = g.formats([
         "\"yyyy-MM-ddTHH:mm:ssZ\"",
         "yyyy-MM-ddTHH:mm:ssZ",
@@ -940,12 +951,12 @@
         "d"
     ]);
 
-	// starting rule for general purpose grammar
+  // starting rule for general purpose grammar
     g._start = _.process(_.set([ g.date, g.time, g.expression ], 
         g.generalDelimiter, g.whiteSpace), t.finish);
-	
-	// real starting rule: tries selected formats first, 
-	// then general purpose rule
+  
+  // real starting rule: tries selected formats first, 
+  // then general purpose rule
     g.start = function (s) {
         try { 
             var r = g._formats.call({}, s); 
@@ -955,8 +966,8 @@
         } catch (e) {}
         return g._start.call({}, s);
     };
-	
-	$D._parse = $D.parse;
+  
+  $D._parse = $D.parse;
 
     /**
      * Converts the specified string value into its JavaScript Date equivalent using CultureInfo specific format information.
@@ -1112,5 +1123,5 @@
      */
     $D.parseExact = function (s, fx) { 
         return $D.getParseFunction(fx)(s); 
-    };	
+    };  
 }());

@@ -6,11 +6,15 @@
  * @license: Licensed under The MIT License. See license.txt and http://www.datejs.com/license/. 
  * @website: http://www.datejs.com/
  */
+
+Date.defaultLocale = "en-US";
  
 (function () {
     var $D = Date, 
         $P = $D.prototype, 
-        $C = $D.CultureInfo,
+        $C = function() {
+          return $D.CultureInfo[$D.currentLocale] || $D.CultureInfo[$D.defaultLocale];         
+        },
         p = function (s, l) {
             if (!l) {
                 l = 2;
@@ -84,7 +88,7 @@
      * @return {Number}  The day number
      */
     $D.getDayNumberFromName = function (name) {
-        var n = $C.dayNames, m = $C.abbreviatedDayNames, o = $C.shortestDayNames, s = name.toLowerCase();
+        var n = $C().dayNames, m = $C().abbreviatedDayNames, o = $C().shortestDayNames, s = name.toLowerCase();
         for (var i = 0; i < n.length; i++) { 
             if (n[i].toLowerCase() == s || m[i].toLowerCase() == s || o[i].toLowerCase() == s) { 
                 return i; 
@@ -99,7 +103,7 @@
      * @return {Number}  The day number
      */
     $D.getMonthNumberFromName = function (name) {
-        var n = $C.monthNames, m = $C.abbreviatedMonthNames, s = name.toLowerCase();
+        var n = $C().monthNames, m = $C().abbreviatedMonthNames, s = name.toLowerCase();
         for (var i = 0; i < n.length; i++) {
             if (n[i].toLowerCase() == s || m[i].toLowerCase() == s) { 
                 return i; 
@@ -128,7 +132,7 @@
     };
  
     $D.getTimezoneAbbreviation = function (offset) {
-        var z = $C.timezones, p;
+        var z = $C().timezones, p;
         for (var i = 0; i < z.length; i++) {
             if (z[i].offset === offset) {
                 return z[i].name;
@@ -138,7 +142,7 @@
     };
     
     $D.getTimezoneOffset = function (name) {
-        var z = $C.timezones, p;
+        var z = $C().timezones, p;
         for (var i = 0; i < z.length; i++) {
             if (z[i].name === name.toUpperCase()) {
                 return z[i].offset;
@@ -522,7 +526,7 @@
             this.addYears(config.year - this.getFullYear()); 
         }
         
-	    /* day has to go last because you can't validate the day without first knowing the month */
+      /* day has to go last because you can't validate the day without first knowing the month */
         if ($D.validateDay(config.day, this.getFullYear(), this.getMonth())) {
             this.addDays(config.day - this.getDate()); 
         }
@@ -710,21 +714,21 @@
      
      d      The day of the month between 1 and 31.                                       "1"  to "31"
      dd     The day of the month with leading zero if required.                          "01" to "31"
-     ddd    Abbreviated day name. $C.abbreviatedDayNames.                                "Mon" to "Sun" 
-     dddd   The full day name. $C.dayNames.                                              "Monday" to "Sunday"
+     ddd    Abbreviated day name. $C().abbreviatedDayNames.                                "Mon" to "Sun" 
+     dddd   The full day name. $C().dayNames.                                              "Monday" to "Sunday"
      
      M      The month of the year between 1-12.                                          "1" to "12"
      MM     The month of the year with leading zero if required.                         "01" to "12"
-     MMM    Abbreviated month name. $C.abbreviatedMonthNames.                            "Jan" to "Dec"
-     MMMM   The full month name. $C.monthNames.                                          "January" to "December"
+     MMM    Abbreviated month name. $C().abbreviatedMonthNames.                            "Jan" to "Dec"
+     MMMM   The full month name. $C().monthNames.                                          "January" to "December"
 
      yy     The year as a two-digit number.                                              "99" or "08"
      yyyy   The full four digit year.                                                    "1999" or "2008"
      
      t      Displays the first character of the A.M./P.M. designator.                    "A" or "P"
-            $C.amDesignator or $C.pmDesignator
+            $C().amDesignator or $C().pmDesignator
      tt     Displays the A.M./P.M. designator.                                           "AM" or "PM"
-            $C.amDesignator or $C.pmDesignator
+            $C().amDesignator or $C().pmDesignator
      
      S      The ordinal suffix ("st, "nd", "rd" or "th") of the current day.            "st, "nd", "rd" or "th"
 
@@ -764,7 +768,7 @@
         // Standard Date and Time Format Strings. Formats pulled from CultureInfo file and
         // may vary by culture. 
         if (format && format.length == 1) {
-            var c = $C.formatPatterns;
+            var c = $C().formatPatterns;
             x.t = x.toString;
             switch (format) {
             case "d": 
@@ -835,25 +839,25 @@
             case "yy":
                 return p(x.getFullYear());
             case "dddd":
-                return $C.dayNames[x.getDay()];
+                return $C().dayNames[x.getDay()];
             case "ddd":
-                return $C.abbreviatedDayNames[x.getDay()];
+                return $C().abbreviatedDayNames[x.getDay()];
             case "dd":
                 return p(x.getDate());
             case "d":
                 return x.getDate();
             case "MMMM":
-                return $C.monthNames[x.getMonth()];
+                return $C().monthNames[x.getMonth()];
             case "MMM":
-                return $C.abbreviatedMonthNames[x.getMonth()];
+                return $C().abbreviatedMonthNames[x.getMonth()];
             case "MM":
                 return p((x.getMonth() + 1));
             case "M":
                 return x.getMonth() + 1;
             case "t":
-                return x.h() < 12 ? $C.amDesignator.substring(0, 1) : $C.pmDesignator.substring(0, 1);
+                return x.h() < 12 ? $C().amDesignator.substring(0, 1) : $C().pmDesignator.substring(0, 1);
             case "tt":
-                return x.h() < 12 ? $C.amDesignator : $C.pmDesignator;
+                return x.h() < 12 ? $C().amDesignator : $C().pmDesignator;
             case "S":
                 return ord(x.getDate());
             default: 

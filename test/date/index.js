@@ -1,6 +1,9 @@
 ﻿Date.Specification = new Specification({
-  'Overview': {
-    setup: function() {  this.baseline = new Date('7/8/2004') },
+	
+	setup: function() { console.debug("setup!"); },
+	
+	'Overview': {
+    setup: function() {  console.debug("setup 2"); Date.currentLocale = "en-US"; this.baseline = new Date('7/8/2004'); },
     'July 8th, 2004 : Typical': {
       run: function() { this.date = Date.parse('July 8th, 2004') },
       assert: function() { return this.baseline.equals( this.date ) }
@@ -37,6 +40,7 @@
 
 'Phrase Variations': {
     setup: function() {
+	
         this.baseline = new Date(2004,6,1);
         this.baseline2 = new Date(2004,6,15);
     },
