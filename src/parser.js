@@ -772,7 +772,7 @@ Date.defaultLocale = "en-US";
         for (locale in Date.CultureInfo) {
           tokens.push(Date.CultureInfo[locale].regexPatterns[key].source);
         }
-        return _.rtoken(new RegExp(tokes.join("|"), "i"));
+        return _.rtoken(new RegExp(tokens.join("|"), "i"));
     };
 
     // hour, minute, second, meridian, timezone
