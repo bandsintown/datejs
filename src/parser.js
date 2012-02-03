@@ -468,9 +468,21 @@ Date.defaultLocale = "en-US";
 
 (function () {
     var $D = Date, 
-        $P = $D.prototype, 
+        $P = $D.prototype,
+        $C_result = null,
         $C = function() { 
-          return $D.CultureInfo[$D.currentLocale] || $D.CultureInfo[$D.defaultLocale]; 
+          if ($C_result) { return $C_result; }
+          $C_result = $D.CultureInfo[$D.currentLocale] || $D.CultureInfo[$D.defaultLocale];
+          if ($C_result) { return $C_result; }
+          var first;
+          for (key in $D.CultureInfo) {
+            if ($D.CultureInfo.hasOwnProperty(key)) {
+              first = key;
+              break;
+            }
+          }
+          $C_result = $D.CultureInfo[first];
+          return $C_result;
         };
 
     var flattenAndCompact = function (ax) { 
